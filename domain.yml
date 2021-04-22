@@ -1,33 +1,21 @@
 version: "2.0"
 
 intents:
-  - greet
-  - goodbye
-  - affirm
-  - deny
-  - mood_great
-  - mood_unhappy
-  - bot_challenge
+  - faq
+  - chitchat
 
 responses:
-  utter_greet:
-  - text: "Hey! How are you?"
-
-  utter_cheer_up:
-  - text: "Here is something to cheer you up:"
-    image: "https://i.imgur.com/nGF1K8f.jpg"
-
-  utter_did_that_help:
-  - text: "Did that help you?"
-
-  utter_happy:
-  - text: "Great, carry on!"
-
-  utter_goodbye:
-  - text: "Bye"
-
-  utter_iamabot:
-  - text: "I am a bot, powered by Rasa."
+  utter_faq/time_required:
+  - text: After any surgical procedure requiring general anesthesia, your pet will remain hospitalized overnight, under the care of our ICU doctors and staff. In the morning, we will discuss your pet’s progress with you. At that time, we will advise whether your pet can safely be discharged, or whether continued hospital care is recommended.
+  utter_faq/visiting_hours:
+  - text: "Monday- Friday: 12:00 PM – 3:00 PM or 8:30 PM – 9:00 PM and Saturday and Sunday: 12:00 PM – 3:00 PM"
+  utter_chitchat/ask_name:
+  - image: "https://i.imgur.com/zTvA58i.jpeg"
+    text: Hello, my name is Vet Bot.
+  - text: I am called Vet Bot!
+  utter_chitchat/ask_human:
+  - text: I am a bot!  
+  
 
 session_config:
   session_expiration_time: 60
