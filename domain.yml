@@ -3,6 +3,15 @@ version: "2.0"
 intents:
   - faq
   - chitchat
+  - request_appointment_details
+
+slots:
+  user_name:
+    type: text
+    influence_conversation: true
+  user_phone:
+    type: text
+    influence_conversation: true  
 
 responses:
   utter_faq/time_required:
@@ -14,8 +23,30 @@ responses:
     text: Hello, my name is Vet Bot.
   - text: I am called Vet Bot!
   utter_chitchat/ask_human:
-  - text: I am a bot!  
+  - text: I am a bot!
+  utter_ask_user_name:
+  - text: What is your name?
+  utter_ask_user_phone:
+  - text: What is Phone number?
+  utter_submit:
+  - text: Your appointment has been received.
+  utter_slots_values:
+  - text: "With the details name:{user_name} phone:{user_phone}"
   
+actions:
+- utter_slots_values
+- utter_submit
+
+
+
+forms:
+  appointment_form:
+    user_name:
+      - type: from_text
+    user_phone:
+      - type: from_text
+
+
 
 session_config:
   session_expiration_time: 60

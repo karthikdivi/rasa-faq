@@ -22,3 +22,6 @@ nlu:
     examples: |
       - Are you human?
       - Are you a real person?
+  - intent: request_appointment_details
+    examples: |
+      - I want to book appointment
