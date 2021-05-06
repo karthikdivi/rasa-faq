@@ -8,10 +8,10 @@ intents:
 slots:
   user_name:
     type: text
-    influence_conversation: true
+    influence_conversation: false
   user_phone:
     type: text
-    influence_conversation: true  
+    influence_conversation: false  
 
 responses:
   utter_faq/time_required:
