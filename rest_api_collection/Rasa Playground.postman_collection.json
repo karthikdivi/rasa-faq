@@ -1,0 +1,214 @@
+{
+	"info": {
+		"_postman_id": "d83e6293-9199-4b2c-aea5-b64954c8d8d7",
+		"name": "Rasa Playground",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Rasa Model Prediction",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"text\": \"I want to book appointment\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5005/model/parse",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"model",
+						"parse"
+					],
+					"query": [
+						{
+							"key": "d",
+							"value": "{\"text\":\"hello\"}",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Rasa Get",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5005/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Rasa Train Model",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-yaml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "version: \"2.0\"\n\nintents:\n  - faq\n  - chitchat\n  - request_appointment_details\n\nslots:\n  user_name:\n    type: text\n    influence_conversation: false\n  user_phone:\n    type: text\n    influence_conversation: false  \n\nresponses:\n  utter_faq/time_required:\n  - text: After any surgical procedure requiring general anesthesia, your pet will remain hospitalized overnight, under the care of our ICU doctors and staff. In the morning, we will discuss your pet’s progress with you. At that time, we will advise whether your pet can safely be discharged, or whether continued hospital care is recommended.\n  utter_faq/visiting_hours:\n  - text: \"Monday- Friday: 12:00 PM – 3:00 PM or 8:30 PM – 9:00 PM and Saturday and Sunday: 12:00 PM – 3:00 PM\"\n  utter_chitchat/ask_name:\n  - image: \"https://i.imgur.com/zTvA58i.jpeg\"\n    text: Hello, my name is Vet Bot.\n  - text: I am called Vet Bot!\n  utter_chitchat/ask_human:\n  - text: I am a bot!\n  utter_ask_user_name:\n  - text: What is your name?\n  utter_ask_user_phone:\n  - text: What is Phone number?\n  utter_submit:\n  - text: Your appointment has been received.\n  utter_slots_values:\n  - text: \"With the details name:{user_name} phone:{user_phone}\"\n  \nactions:\n- utter_slots_values\n- utter_submit\n\n\n\nforms:\n  appointment_form:\n    user_name:\n      - type: from_text\n    user_phone:\n      - type: from_text\n\n\n\nsession_config:\n  session_expiration_time: 60\n  carry_over_slots_to_new_session: true\n\n\nnlu:\n  - intent: faq/time_required\n    examples: |\n      - How long will my pet have to stay in the hospital?\n      - What is the total time I need to spend in hospital?\n      - How long it takes to address the pet concern?\n  - intent: faq/visiting_hours\n    examples: |\n      - What are the visiting hours?\n      - What are the hospital timings? \n      - When can I make a visit? \n      - Please give me the operating hours of hospital\n  - intent: chitchat/ask_name\n    examples: |\n      - What is your name?\n      - May I know your name?\n      - What do people call you?\n      - Do you have a name for yourself?\n  - intent: chitchat/ask_human\n    examples: |\n      - Are you human?\n      - Are you a real person?\n  - intent: request_appointment_details\n    examples: |\n      - I want to book appointment\n\nrules:\n\n- rule: respond to FAQs\n  steps:\n  - intent: faq\n  - action: utter_faq\n\n- rule: respond to chitchat\n  steps:\n  - intent: chitchat\n  - action: utter_chitchat\n\n- rule: Activate Form\n  steps: \n  - intent: request_appointment_details\n  - action: appointment_form\n  - active_loop: appointment_form\n  \n- rule: Submit form\n  condition:\n  - active_loop: appointment_form\n  steps:\n  - action: appointment_form\n  - active_loop: null\n  - slot_was_set:\n    - requested_slot: null\n  - action: utter_submit\n  - action: utter_slots_values\n\n\nlanguage: en\n\npipeline:\n  - name: WhitespaceTokenizer\n  - name: RegexFeaturizer\n  - name: LexicalSyntacticFeaturizer\n  - name: CountVectorsFeaturizer\n  - name: CountVectorsFeaturizer\n    analyzer: char_wb\n    min_ngram: 1\n    max_ngram: 4\n  - name: DIETClassifier\n    epochs: 100\n  - name: EntitySynonymMapper\n  - name: ResponseSelector\n    epochs: 100\n    retrieval_intent: faq\n  - name: ResponseSelector\n    epochs: 100\n    retrieval_intent: chitchat    \n  - name: FallbackClassifier\n    threshold: 0.3\n    ambiguity_threshold: 0.1\n\npolicies:\n  - name: RulePolicy",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5005/model/train",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"model",
+						"train"
+					]
+				},
+				"description": "Request data is copied content of *.yml(nlu, rules, domain etc.)\n \nResponse(model path+name) of this request is supposed to be used in req paylod for ReplaceModel request."
+			},
+			"response": []
+		},
+		{
+			"name": "Rasa Eval Stories",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-yaml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "stories:\n- story: My story\n  steps:\n  - intent: greet\n  - action: utter_chitchat/ask_name\n"
+				},
+				"url": {
+					"raw": "http://localhost:5005/model/test/stories",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"model",
+						"test",
+						"stories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Rasa Prase Message",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"text\": \"I want to book appointment\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5005/model/parse",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"model",
+						"parse"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Rasa Chat Test - Webhook",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"sender\": \"test_user\",\n  \"message\": \"Book appointment\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5005/webhooks/rest/webhook",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"webhooks",
+						"rest",
+						"webhook"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Rasa Replace model",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"model_file\": \"models/20210510-125058.tar.gz\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5005/model",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"model"
+					]
+				},
+				"description": "model_file value can be obtained from response of TrainModel request."
+			},
+			"response": []
+		}
+	]
+}
